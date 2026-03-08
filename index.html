@@ -1,1 +1,270 @@
-hello world
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeta Chat AI - Web Professional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --bg-dark: #030014;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(76, 29, 149, 0.15) 0%, transparent 40%);
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .web-container {
+            width: 95%;
+            max-width: 1000px;
+            height: 90vh;
+            background: rgba(13, 2, 33, 0.7);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        header {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .msg {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.6;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .user-msg {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-msg {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .input-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px;
+            outline: none;
+            font-size: 15px;
+            resize: none;
+            max-height: 120px;
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .send-btn:hover { background: var(--primary-dark); transform: scale(1.02); }
+
+        /* WATERMARK STYLE */
+        .watermark {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(139, 92, 246, 0.4);
+            padding-top: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Markdown Custom */
+        pre { background: #000 !important; padding: 12px; border-radius: 8px; margin: 10px 0; border: 1px solid #333; }
+        code { color: #d8b4fe; }
+    </style>
+</head>
+<body>
+
+    <div class="web-container">
+        <header>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-purple-900/40">
+                    <span class="text-xl font-black italic">Z</span>
+                </div>
+                <div>
+                    <h1 class="text-md font-bold tracking-tight">ZETA CHAT <span class="text-purple-500">PRO</span></h1>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                        <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Web v5.2</span>
+                    </div>
+                </div>
+            </div>
+            <button onclick="window.location.reload()" class="text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-white">New Session</button>
+        </header>
+
+        <main id="chat-window">
+            <div class="msg ai-msg">
+                Selamat datang di Zeta Chat Professional. Sesi obrolan Anda telah diamankan. Bagaimana saya bisa membantu Anda hari ini?
+            </div>
+        </main>
+
+        <div id="typing" class="hidden px-8 py-1 text-[10px] font-bold text-purple-500 uppercase tracking-widest animate-pulse">
+            Zeta is analyzing...
+        </div>
+
+        <footer class="input-container">
+            <div class="input-box">
+                <textarea id="user-input" rows="1" placeholder="Type your message..." oninput="autoGrow(this)"></textarea>
+                <button onclick="handleSend()" class="send-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+            <div class="watermark">Made by Raf and Diks</div>
+        </footer>
+    </div>
+
+    <script>
+        const API_KEY = "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";
+        const chatWindow = document.getElementById('chat-window');
+        const input = document.getElementById('user-input');
+        const typing = document.getElementById('typing');
+
+        let messages = [
+            { role: "system", content: "Kamu adalah Zeta Chat Professional. Jawablah dengan cerdas dan gunakan format markdown." }
+        ];
+
+        async function handleSend() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            addBubble('user', text);
+            messages.push({ role: "user", content: text });
+            input.value = "";
+            input.style.height = "auto";
+            typing.classList.remove('hidden');
+            scrollToBottom();
+
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: messages,
+                        temperature: 0.6
+                    })
+                });
+
+                const data = await response.json();
+                typing.classList.add('hidden');
+
+                if (data.choices && data.choices[0]) {
+                    const aiText = data.choices[0].message.content;
+                    addBubble('ai', aiText);
+                    messages.push({ role: "assistant", content: aiText });
+                }
+            } catch (err) {
+                typing.classList.add('hidden');
+                addBubble('ai', "Error connecting to Groq Server.");
+            }
+            scrollToBottom();
+        }
+
+        function addBubble(role, text) {
+            const div = document.createElement('div');
+            div.className = `msg ${role}-msg`;
+            div.innerHTML = marked.parse(text);
+            chatWindow.appendChild(div);
+        }
+
+        function autoGrow(element) {
+            element.style.height = "5px";
+            element.style.height = (element.scrollHeight) + "px";
+        }
+
+        function scrollToBottom() {
+            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        }
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+    </script>
+</body>
+</html>
