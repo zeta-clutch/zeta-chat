@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZETA CORE - Intelligence</title>
+    <title>ZETA CORE v4.1 - Intelligence (Classic UI)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
@@ -12,91 +12,124 @@
         * { box-sizing: border-box; margin: 0; padding: 0; scrollbar-width: none; }
         body { background: var(--bg); color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; overflow: hidden; transition: 0.5s; }
         
-        #bg-canvas { position: fixed; inset: 0; z-index: -1; opacity: 0.6; }
-        .wa-wallpaper { position: fixed; inset: 0; z-index: -1; opacity: 0.1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: none; }
+        /* WALLPAPER LAYERS - CLASSIC */
+        #bg-canvas { position: fixed; inset: 0; z-index: -1; opacity: 0.5; }
+        .wallpaper-overlay { position: fixed; inset: 0; z-index: -2; opacity: 0; transition: opacity 1s ease; background-repeat: repeat; background-size: 400px; }
 
-        /* --- WELCOME SCREEN --- */
+        /* WATERMARK - CLASSIC */
+        .zeta-watermark {
+            position: fixed; bottom: 10px; right: 15px; z-index: 500;
+            font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+            color: rgba(255,255,255,0.15); pointer-events: none;
+            font-family: 'Space Grotesk', sans-serif; mix-blend-mode: overlay;
+        }
+
+        /* WELCOME SCREEN - CLASSIC */
         #welcome-screen { position: fixed; inset: 0; z-index: 3000; background: #020104; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .zeta-title { font-family: 'Space Grotesk', sans-serif; font-size: 42px; font-weight: 900; font-style: italic; margin-bottom: 30px; }
-        .menu-container { display: flex; flex-direction: column; gap: 15px; width: 280px; }
-        .choice-btn { padding: 16px; border: 1.5px solid rgba(188, 19, 254, 0.3); border-radius: 16px; background: rgba(188, 19, 254, 0.05); cursor: pointer; transition: 0.3s; text-align: center; }
+        .choice-btn { width: 280px; padding: 16px; border: 1.5px solid rgba(188, 19, 254, 0.3); border-radius: 16px; background: rgba(188, 19, 254, 0.05); cursor: pointer; transition: 0.3s; text-align: center; margin-bottom: 15px; }
         .choice-btn:hover { border-color: var(--neon); background: rgba(188, 19, 254, 0.15); transform: translateY(-3px); }
 
-        /* --- HEADER & SETTINGS --- */
-        header { padding: 0 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 75px; transform: translateY(-100%); transition: 0.8s; pointer-events: auto; }
+        /* HEADER & DASHBOARD PILL */
+        header { padding: 0 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 75px; transform: translateY(-100%); transition: 0.8s; backdrop-filter: blur(10px); }
+        .dashboard-pill { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 20px; font-size: 9px; display: flex; gap: 8px; border: 1px solid rgba(255,255,255,0.1); font-weight: 800; opacity: 0.7; }
+        
+        /* --- PERUBAHAN DISINI UNTUK SIMETRIS --- */
+        .header-center { 
+            flex: 1; 
+            text-align: center; 
+            padding-left: 24px; /* Menambah padding kiri untuk menyeimbangkan ikon menu di kanan */
+        }
+        /* ---------------------------------------- */
+
+        /* SYSTEM PANEL - CLASSIC */
         #system-panel { position: fixed; top: 85px; right: 20px; width: 260px; border-radius: 18px; padding: 20px; z-index: 2500; display: none; opacity: 0; transform: translateY(-10px); transition: 0.3s ease; }
         .panel-open #system-panel { display: block; opacity: 1; transform: translateY(0); }
         .mode-option { width: 100%; padding: 10px; margin-bottom: 6px; border-radius: 10px; text-align: left; cursor: pointer; transition: 0.2s; }
 
-        /* --- CHAT ENGINE DENGAN AUTO-FADE TOP --- */
+        /* CHAT ENGINE - CLASSIC WITH FADE */
         #chat-engine { 
-            height: 100vh; 
-            overflow-y: auto; 
-            padding: 100px 5% 150px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            opacity: 0;
-            /* Efek Memudar di Atas */
-            -webkit-mask-image: linear-gradient(to bottom, transparent 5%, black 15%, black 95%, transparent 100%);
-            mask-image: linear-gradient(to bottom, transparent 5%, black 15%, black 95%, transparent 100%);
+            height: 100vh; overflow-y: auto; padding: 100px 5% 150px; display: flex; flex-direction: column; gap: 18px; opacity: 0;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+            scroll-behavior: smooth;
         }
-
-        .bubble { position: relative; padding: 12px 16px; border-radius: 18px; font-size: 14px; max-width: 85%; animation: slideIn 0.4s ease forwards; line-height: 1.5; }
         
+        /* CLASSIC BUBBLE DEFINITIONS */
+        .bubble { position: relative; padding: 14px 18px; border-radius: 20px; font-size: 14.5px; max-width: 85%; animation: slideIn 0.4s ease forwards; line-height: 1.6; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* THINKING LABEL - CLASSIC */
         .thinking-label { font-size: 10px; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; margin-left: 8px; text-transform: uppercase; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
         
+        /* TYPING CURSOR */
         .typing::after { content: '|'; animation: blink 0.7s infinite; color: var(--neon); }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* --- THEMES --- */
+        /* --- THEME: NEURAL (CLASSIC) --- */
+        .theme-neural .wallpaper-overlay { opacity: 0.15; background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); background-color: #020104; }
+        .theme-neural .zeta-watermark { color: rgba(188, 19, 254, 0.15); mix-blend-mode: screen; } 
+        .theme-neural .user-bubble { background: #fff; color: #000; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
+        .theme-neural .ai-container { align-self: flex-start; display: flex; flex-direction: column; gap: 2px; max-width: 85%; }
+        .theme-neural .ai-bubble { background: rgba(255,255,255,0.03); border: 1.5px solid rgba(188,19,254,0.3); border-bottom-left-radius: 4px; backdrop-filter: blur(5px); }
+        .theme-neural .thinking-label { color: var(--neon); }
         .theme-neural #system-panel { background: var(--panel); border: 1px solid var(--neon); backdrop-filter: blur(20px); }
         .theme-neural .mode-option { background: rgba(255,255,255,0.05); border: 1px solid rgba(188,19,254,0.2); color: white; }
         .theme-neural .mode-option.active { border-color: var(--neon); background: rgba(188,19,254,0.3); }
-        .theme-neural .user-bubble { background: #fff; color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .theme-neural .ai-bubble { background: rgba(255,255,255,0.05); border: 1px solid rgba(188,19,254,0.2); align-self: flex-start; border-bottom-left-radius: 2px; }
 
+        /* --- THEME: WHATSAPP (CLASSIC) --- */
+        .theme-whatsapp .wallpaper-overlay { opacity: 0.08; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-color: #0b141a; }
+        .theme-whatsapp .user-bubble { background: #005c4b; color: #e9edef; align-self: flex-end; border-top-right-radius: 0; box-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+        .theme-whatsapp .ai-container { align-self: flex-start; display: flex; flex-direction: column; gap: 2px; max-width: 85%; }
+        .theme-whatsapp .ai-bubble { background: #202c33; color: #e9edef; border-top-left-radius: 0; box-shadow: 0 1px 1px rgba(0,0,0,0.2); }
+        .theme-whatsapp .thinking-label { color: #8696a0; text-transform: lowercase; font-style: italic; }
         .theme-whatsapp #system-panel { background: #233138; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .theme-whatsapp .mode-option { color: #e9edef; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .theme-whatsapp .mode-option.active { color: #00a884; font-weight: bold; }
-        .theme-whatsapp .user-bubble { background: #005c4b; color: #e9edef; align-self: flex-end; border-top-right-radius: 0; }
-        .theme-whatsapp .ai-bubble { background: #202c33; color: #e9edef; align-self: flex-start; border-top-left-radius: 0; }
 
-        /* --- DOCK --- */
-        .dock-container { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; transform: translateY(150px); transition: 0.8s; display: flex; align-items: flex-end; gap: 8px; padding: 10px 15px 25px; }
-        .input-area { flex: 1; display: flex; align-items: center; min-height: 48px; border-radius: 25px; padding: 0 15px; }
-        textarea { flex: 1; background: transparent; border: none; outline: none; font-size: 15px; resize: none; max-height: 150px; padding: 10px 5px; color: white; }
-        .send-btn { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
+        /* DOCK & INPUT - CLASSIC UI */
+        .dock-container { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; transform: translateY(150px); transition: 0.8s; display: flex; align-items: flex-end; gap: 8px; padding: 10px 15px 30px; }
+        .input-area { flex: 1; display: flex; align-items: center; min-height: 50px; border-radius: 25px; padding: 0 15px; backdrop-filter: blur(10px); }
+        textarea { flex: 1; background: transparent; border: none; outline: none; font-size: 15px; resize: none; max-height: 150px; padding: 12px 5px; color: white; }
+        textarea::placeholder { opacity: 0.7; }
+        .send-btn { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
+        /* SYSTEM STATES */
         .system-ready #welcome-screen { opacity: 0; pointer-events: none; }
         .system-ready header, .system-ready .dock-container { transform: translateY(0); }
         .system-ready #chat-engine { opacity: 1; }
     </style>
 </head>
 <body>
+    <div id="wp-layer" class="wallpaper-overlay"></div>
     <canvas id="bg-canvas"></canvas>
-    <div class="wa-wallpaper"></div>
+    
+    <div class="zeta-watermark">made by raf dan diks</div>
 
     <div id="welcome-screen">
         <h1 class="zeta-title">ZETA <span style="color:var(--neon)">CORE</span></h1>
-        <div class="menu-container">
-            <div class="choice-btn" onclick="bootSystem('neural')"><b>NEURAL INTERFACE</b><span>Futuristic Mode</span></div>
-            <div class="choice-btn" onclick="bootSystem('whatsapp')"><b>WHATSAPP MODE</b><span>Simplicity Mode</span></div>
-        </div>
+        <div class="choice-btn" onclick="bootSystem('neural')"><b>NEURAL INTERFACE</b></div>
+        <div class="choice-btn" onclick="bootSystem('whatsapp')"><b>WHATSAPP MODE</b></div>
     </div>
 
-    <header>
-        <div style="font-size: 10px; font-weight: 800; opacity: 0.6;">ZETA v3.3</div>
-        <div class="header-center"><div class="header-title">ZETA <span id="title-mode">CORE</span></div></div>
-        <div onclick="toggleMenu()" class="cursor-pointer">
-            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+    <header id="app-header">
+        <div class="dashboard-pill">
+            <span id="sys-time">00:00</span>
+            <span id="sys-bat">--%</span>
+        </div>
+        <div class="header-center"><b>ZETA <span id="title-mode">CORE</span></b></div>
+        <div onclick="toggleMenu()" class="cursor-pointer p-2">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
         </div>
         <div id="system-panel">
             <div class="mode-option active" onclick="ZETA.setMode('cepat', this)"><b>Mode Cepat</b></div>
             <div class="mode-option" onclick="ZETA.setMode('efisien', this)"><b>Mode Efisien</b></div>
             <div class="mode-option" onclick="ZETA.setMode('pro', this)"><b>Mode Pro</b></div>
-            <div class="text-red-500 text-[10px] font-bold text-center mt-4 cursor-pointer" onclick="location.reload()">REBOOT SYSTEM</div>
+            <hr class="my-3 opacity-10">
+            <div class="text-[10px] opacity-50 text-center mb-2">Memory: <span id="mem-stat" class="text-green-500">Active</span></div>
+            <button onclick="ZETA.clearHistory()" class="w-full py-2 bg-red-500/10 text-red-500 text-[10px] font-bold rounded-lg mb-2">PURGE MEMORY</button>
+            <div class="text-red-500 text-xs font-bold text-center cursor-pointer p-1" onclick="location.reload()">REBOOT</div>
         </div>
     </header>
 
@@ -105,51 +138,88 @@
     <div class="dock-container">
         <div class="input-area" id="input-box">
             <input type="file" id="file-up" style="display:none" onchange="ZETA.handleFile(this)">
-            <div class="text-xl text-gray-400 cursor-pointer mr-2" onclick="document.getElementById('file-up').click()">+</div>
-            <textarea id="zeta-in" placeholder="Ketik pesan..." rows="1" oninput="this.style.height='';this.style.height=this.scrollHeight+'px'"></textarea>
+            <div class="text-2xl text-gray-400 cursor-pointer mr-3" onclick="document.getElementById('file-up').click()">+</div>
+            <textarea id="zeta-in" placeholder="Ketik pesan..." rows="1" oninput="ZETA.autoResize(this)"></textarea>
         </div>
         <div class="send-btn" id="main-send" onclick="ZETA.send()">
-            <svg width="20" height="20" fill="white" viewBox="0 0 24 24" style="transform: rotate(45deg);"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            <svg width="22" height="22" fill="white" viewBox="0 0 24 24" style="transform: rotate(45deg);"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </div>
     </div>
 
     <script>
+        // CORE CONFIGURATION (KEY RETAINED)
+        const CONFIG = {
+            API_KEY: "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",
+            MODELS: { fast: "llama-3.1-8b-instant", deep: "llama-3.3-70b-versatile" }
+        };
+
+        // SYSTEM STATE
+        let sysState = { mode: 'cepat', theme: 'neural', isThinking: false };
+
+        // 1. DASHBOARD ENGINE
+        function initDashboard() {
+            function update() {
+                const now = new Date();
+                document.getElementById('sys-time').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+                if (navigator.getBattery) {
+                    navigator.getBattery().then(bat => {
+                        document.getElementById('sys-bat').innerText = Math.floor(bat.level * 100) + "%";
+                    });
+                }
+            }
+            update(); setInterval(update, 1000);
+        }
+
+        // 2. BACKGROUND ENGINE
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let pts = [];
-        function init() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; pts = Array.from({length: 30}, () => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.2, vy: (Math.random()-0.5)*0.2 })); }
-        function draw() { ctx.clearRect(0,0,canvas.width, canvas.height); ctx.strokeStyle = "rgba(188, 19, 254, 0.1)"; pts.forEach((p, i) => { p.x += p.vx; p.y += p.vy; if(p.x<0 || p.x>canvas.width) p.vx*=-1; if(p.y<0 || p.y>canvas.height) p.vy*=-1; pts.slice(i+1).forEach(p2 => { if(Math.hypot(p.x-p2.x, p.y-p2.y) < 150) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); } }); }); requestAnimationFrame(draw); }
-        init(); draw();
+        function initBg() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; pts = Array.from({length: 30}, () => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.25, vy: (Math.random()-0.5)*0.25 })); }
+        function drawBg() { ctx.clearRect(0,0,canvas.width, canvas.height); ctx.strokeStyle = "rgba(188, 19, 254, 0.12)"; pts.forEach((p, i) => { p.x += p.vx; p.y += p.vy; if(p.x<0 || p.x>canvas.width) p.vx*=-1; if(p.y<0 || p.y>canvas.height) p.vy*=-1; pts.slice(i+1).forEach(p2 => { if(Math.hypot(p.x-p2.x, p.y-p2.y) < 160) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); } }); }); requestAnimationFrame(drawBg); }
+        initBg(); drawBg();
 
+        // 3. UI LOGIC
         function toggleMenu() { document.body.classList.toggle('panel-open'); }
+        
         function bootSystem(mode) {
+            sysState.theme = mode;
             const sendBtn = document.getElementById('main-send');
             const inputBox = document.getElementById('input-box');
+            const header = document.getElementById('app-header');
+            
             if(mode === 'whatsapp') {
                 document.body.classList.add('theme-whatsapp');
                 document.getElementById('title-mode').innerText = "CHAT";
                 document.getElementById('title-mode').style.color = "#00a884";
                 sendBtn.style.background = "#00a884";
                 inputBox.style.background = "#2a3942";
+                header.style.background = "#202c33";
                 document.getElementById('bg-canvas').style.display = "none";
             } else {
                 document.body.classList.add('theme-neural');
                 sendBtn.style.background = "#bc13fe";
-                inputBox.style.background = "rgba(2,1,4,0.8)";
+                inputBox.style.background = "rgba(10,5,20,0.8)";
                 inputBox.style.border = "1.5px solid #bc13fe";
+                header.style.background = "rgba(2,1,4,0.9)";
+                header.style.borderBottom = "1px solid rgba(188,19,254,0.2)";
             }
             document.body.classList.add('system-ready');
+            initDashboard();
+            ZETA.loadMemory(); 
         }
 
+        // 4. ZETA ENGINE
         const ZETA = (() => {
-            const KEY = "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";
             const engine = document.getElementById('chat-engine');
-            let currentMode = 'cepat';
+            const input = document.getElementById('zeta-in');
+
+            const saveMemory = () => { localStorage.setItem('zeta_v4_history', engine.innerHTML); };
+            const loadMemory = () => { const saved = localStorage.getItem('zeta_v4_history'); if(saved) { engine.innerHTML = saved; engine.scrollTo(0, engine.scrollHeight); document.getElementById('mem-stat').innerText = "Loaded"; } };
 
             const typeText = async (element, text) => {
                 element.classList.add('typing');
                 let currentText = "";
-                const speed = currentMode === 'pro' ? 50 : (currentMode === 'efisien' ? 25 : 5);
+                const speed = sysState.mode === 'pro' ? 50 : (sysState.mode === 'efisien' ? 20 : 4);
                 for (const char of text.split("")) {
                     currentText += char;
                     element.innerHTML = marked.parse(currentText);
@@ -157,47 +227,62 @@
                     await new Promise(r => setTimeout(r, speed));
                 }
                 element.classList.remove('typing');
+                saveMemory(); 
             };
 
             const createBubble = (role, content, isWait = false) => {
-                const container = document.createElement('div');
-                container.className = "flex flex-col items-start";
                 if(role === 'ai') {
+                    const container = document.createElement('div');
+                    container.className = "ai-container";
                     const status = document.createElement('div');
                     status.className = "thinking-label";
                     status.innerText = `zeta sedang berfikir...`;
                     const bubble = document.createElement('div');
                     bubble.className = "bubble ai-bubble";
-                    if(isWait) bubble.innerHTML = "•••";
+                    if(isWait) bubble.innerHTML = `<span class="opacity-50 text-xs">...</span>`;
                     container.appendChild(status);
                     container.appendChild(bubble);
                     engine.appendChild(container);
+                    engine.scrollTo({top: engine.scrollHeight, behavior: 'smooth'});
                     return { bubble, status };
                 } else {
                     const b = document.createElement('div');
                     b.className = "bubble user-bubble";
                     b.innerHTML = marked.parse(content);
                     engine.appendChild(b);
+                    engine.scrollTo({top: engine.scrollHeight, behavior: 'smooth'});
+                    saveMemory(); 
                     return b;
                 }
             };
 
             return {
-                setMode: (mode, el) => { currentMode = mode; document.querySelectorAll('.mode-option').forEach(o => o.classList.remove('active')); el.classList.add('active'); toggleMenu(); },
-                handleFile: (input) => { if(input.files[0]) createBubble('user', `📎 File: ${input.files[0].name}`); },
+                loadMemory, 
+                setMode: (mode, el) => { sysState.mode = mode; document.querySelectorAll('.mode-option').forEach(o => o.classList.remove('active')); el.classList.add('active'); toggleMenu(); },
+                autoResize: (el) => { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; },
+                clearHistory: () => { if(confirm("Purge all Zeta memory?")) { localStorage.removeItem('zeta_v4_history'); engine.innerHTML = ""; toggleMenu(); } },
+                handleFile: (input) => { if(input.files[0]) createBubble('user', `📎 Mengirim file: **${input.files[0].name}**`); },
                 send: async () => {
-                    const input = document.getElementById('zeta-in');
                     const val = input.value.trim();
-                    if(!val) return;
+                    if(!val || sysState.isThinking) return;
+                    
                     createBubble('user', val);
                     input.value = ""; input.style.height = "auto";
+                    sysState.isThinking = true;
+
                     const wait = createBubble('ai', "", true);
-                    engine.scrollTo({top: engine.scrollHeight, behavior: 'smooth'});
+                    
                     try {
+                        const thinkDelay = sysState.mode === 'pro' ? 1800 : (sysState.mode === 'efisien' ? 800 : 0);
+                        await new Promise(r => setTimeout(r, thinkDelay));
+
                         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                             method: "POST",
-                            headers: { "Authorization": `Bearer ${KEY}`, "Content-Type": "application/json" },
-                            body: JSON.stringify({ model: currentMode === 'pro' ? "llama-3.3-70b-versatile" : "llama-3.1-8b-instant", messages: [{role:"system", content:"Zeta Core."}, {role:"user", content:val}] })
+                            headers: { "Authorization": `Bearer ${CONFIG.API_KEY}`, "Content-Type": "application/json" },
+                            body: JSON.stringify({ 
+                                model: sysState.mode === 'pro' ? CONFIG.MODELS.deep : CONFIG.MODELS.fast, 
+                                messages: [{role:"system", content:"Kamu Zeta Core."}, {role:"user", content:val}] 
+                            })
                         });
                         const data = await res.json();
                         wait.status.style.display = 'none';
@@ -205,11 +290,15 @@
                         await typeText(wait.bubble, data.choices[0].message.content);
                     } catch (e) {
                         wait.status.innerText = "Error!";
+                        wait.bubble.innerText = "Koneksi terputus.";
+                    } finally {
+                        sysState.isThinking = false;
                     }
                 }
             };
         })();
 
+        // 5. INPUT LISTENERS
         document.getElementById('zeta-in').addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ZETA.send(); } });
     </script>
 </body>
