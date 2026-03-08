@@ -1,1 +1,236 @@
->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZETA CORE - Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon: #bc13fe; --bg: #020104; --panel: rgba(20, 10, 30, 0.95); }
+        * { box-sizing: border-box; margin: 0; padding: 0; scrollbar-width: none; }
+        body { background: var(--bg); color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; overflow: hidden; transition: 0.5s; }
+        
+        #bg-canvas { position: fixed; inset: 0; z-index: -1; opacity: 0.6; }
+        .wa-wallpaper { position: fixed; inset: 0; z-index: -1; opacity: 0.1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: none; }
+
+        /* --- WELCOME SCREEN --- */
+        #welcome-screen { position: fixed; inset: 0; z-index: 3000; background: #020104; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .zeta-title { font-family: 'Space Grotesk', sans-serif; font-size: 42px; font-weight: 900; font-style: italic; margin-bottom: 30px; }
+        .menu-container { display: flex; flex-direction: column; gap: 15px; width: 280px; }
+        .choice-btn { padding: 16px; border: 1.5px solid rgba(188, 19, 254, 0.3); border-radius: 16px; background: rgba(188, 19, 254, 0.05); cursor: pointer; transition: 0.3s; text-align: center; }
+        .choice-btn:hover { border-color: var(--neon); background: rgba(188, 19, 254, 0.15); transform: translateY(-3px); }
+
+        /* --- HEADER & SETTINGS --- */
+        header { padding: 0 20px; display: flex; align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 75px; transform: translateY(-100%); transition: 0.8s; }
+        #system-panel { position: fixed; top: 85px; right: 20px; width: 260px; border-radius: 18px; padding: 20px; z-index: 2500; display: none; opacity: 0; transform: translateY(-10px); transition: 0.3s ease; }
+        .panel-open #system-panel { display: block; opacity: 1; transform: translateY(0); }
+        .mode-option { width: 100%; padding: 10px; margin-bottom: 6px; border-radius: 10px; text-align: left; cursor: pointer; transition: 0.2s; }
+
+        /* --- CHAT ENGINE --- */
+        #chat-engine { height: 100vh; overflow-y: auto; padding: 90px 5% 120px; display: flex; flex-direction: column; gap: 12px; opacity: 0; }
+        .bubble { position: relative; padding: 12px 16px; border-radius: 18px; font-size: 14px; max-width: 85%; animation: slideIn 0.4s ease forwards; line-height: 1.5; }
+        .thinking-status { font-size: 9px; font-weight: 800; color: var(--neon); letter-spacing: 1px; margin-left: 10px; animation: pulse 1.5s infinite; }
+        .typing::after { content: '|'; animation: blink 0.7s infinite; color: var(--neon); }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- THEME: NEURAL --- */
+        .theme-neural #system-panel { background: var(--panel); border: 1px solid var(--neon); backdrop-filter: blur(20px); }
+        .theme-neural .mode-option { background: rgba(255,255,255,0.05); border: 1px solid rgba(188,19,254,0.2); color: white; }
+        .theme-neural .mode-option.active { border-color: var(--neon); background: rgba(188,19,254,0.2); }
+        .theme-neural .user-bubble { background: #fff; color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .theme-neural .ai-bubble { background: rgba(255,255,255,0.05); border: 1px solid rgba(188,19,254,0.2); align-self: flex-start; border-bottom-left-radius: 2px; }
+
+        /* --- THEME: WHATSAPP --- */
+        .theme-whatsapp #system-panel { background: #233138; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .theme-whatsapp .mode-option { color: #e9edef; border-bottom: 1px solid rgba(255,255,255,0.05); border-radius: 0; }
+        .theme-whatsapp .mode-option.active { color: #00a884; font-weight: bold; }
+        .theme-whatsapp .user-bubble { background: #005c4b; color: #e9edef; align-self: flex-end; border-top-right-radius: 0; }
+        .theme-whatsapp .ai-bubble { background: #202c33; color: #e9edef; align-self: flex-start; border-top-left-radius: 0; }
+
+        /* --- DOCK & INPUT --- */
+        .dock-container { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; transform: translateY(150px); transition: 0.8s; display: flex; align-items: flex-end; gap: 8px; padding: 10px 15px 25px; }
+        .input-area { flex: 1; display: flex; align-items: center; min-height: 48px; border-radius: 25px; padding: 0 15px; }
+        textarea { flex: 1; background: transparent; border: none; outline: none; font-size: 15px; resize: none; max-height: 150px; padding: 10px 5px; color: white; }
+        .plus-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; color: #8696a0; margin-right: 10px; position: relative; }
+        .send-btn { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
+
+        /* SYSTEM READY STATE */
+        .system-ready #welcome-screen { opacity: 0; pointer-events: none; }
+        .system-ready header, .system-ready .dock-container { transform: translateY(0); }
+        .system-ready #chat-engine { opacity: 1; }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <div class="wa-wallpaper"></div>
+
+    <div id="welcome-screen">
+        <h1 class="zeta-title">ZETA <span style="color:var(--neon)">CORE</span></h1>
+        <div class="menu-container">
+            <div class="choice-btn" onclick="bootSystem('neural')"><b>NEURAL INTERFACE</b><span>Futuristic Mode</span></div>
+            <div class="choice-btn" onclick="bootSystem('whatsapp')"><b>WHATSAPP MODE</b><span>Simplicity Mode</span></div>
+        </div>
+    </div>
+
+    <header>
+        <div id="h-left" style="font-size: 10px; font-weight: 800; opacity: 0.6;">ZETA v3.1</div>
+        <div class="header-center"><div class="header-title">ZETA <span id="title-mode">CORE</span></div></div>
+        <div id="h-right">
+            <div class="cursor-pointer p-2" onclick="toggleMenu()">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            </div>
+        </div>
+        <div id="system-panel">
+            <div class="mode-option active" onclick="ZETA.setMode('cepat', this)"><b>Flash Response</b><p class="text-[10px] opacity-60">Hemat daya & cepat</p></div>
+            <div class="mode-option" onclick="ZETA.setMode('pro', this)"><b>Deep Thinking</b><p class="text-[10px] opacity-60">Analisis tingkat tinggi</p></div>
+            <hr class="my-2 opacity-10">
+            <div class="text-red-500 text-xs font-bold text-center cursor-pointer p-2" onclick="location.reload()">REBOOT SYSTEM</div>
+        </div>
+    </header>
+
+    <main id="chat-engine"></main>
+
+    <div class="dock-container">
+        <div class="input-area" id="input-box">
+            <div class="plus-btn">
+                <input type="file" id="file-up" style="position:absolute; inset:0; opacity:0; cursor:pointer;" onchange="ZETA.handleFile(this)">
+                <span>+</span>
+            </div>
+            <textarea id="zeta-in" placeholder="Ketik pesan..." rows="1" oninput="this.style.height='';this.style.height=this.scrollHeight+'px'"></textarea>
+        </div>
+        <div class="send-btn" id="main-send" onclick="ZETA.send()">
+            <svg width="20" height="20" fill="white" viewBox="0 0 24 24" style="transform: rotate(45deg);"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let pts = [];
+        function init() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            pts = Array.from({length: 30}, () => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.2, vy: (Math.random()-0.5)*0.2 }));
+        }
+        function draw() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.strokeStyle = "rgba(188, 19, 254, 0.15)";
+            pts.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x<0 || p.x>canvas.width) p.vx*=-1; if(p.y<0 || p.y>canvas.height) p.vy*=-1;
+                pts.slice(i+1).forEach(p2 => {
+                    if(Math.hypot(p.x-p2.x, p.y-p2.y) < 150) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+                });
+            });
+            requestAnimationFrame(draw);
+        }
+        init(); draw();
+
+        function toggleMenu() { document.body.classList.toggle('panel-open'); }
+
+        function bootSystem(mode) {
+            const sendBtn = document.getElementById('main-send');
+            const inputBox = document.getElementById('input-box');
+            if(mode === 'whatsapp') {
+                document.body.classList.add('theme-whatsapp');
+                document.getElementById('title-mode').innerText = "CHAT";
+                document.getElementById('title-mode').style.color = "#00a884";
+                sendBtn.style.background = "#00a884";
+                inputBox.style.background = "#2a3942";
+                document.getElementById('bg-canvas').style.display = "none";
+            } else {
+                document.body.classList.add('theme-neural');
+                sendBtn.style.background = "#bc13fe";
+                inputBox.style.background = "rgba(2,1,4,0.8)";
+                inputBox.style.border = "1.5px solid #bc13fe";
+            }
+            document.body.classList.add('system-ready');
+        }
+
+        const ZETA = (() => {
+            const KEY = "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";
+            const engine = document.getElementById('chat-engine');
+            let currentMode = 'cepat';
+
+            const typeText = async (element, text) => {
+                element.classList.add('typing');
+                let currentText = "";
+                for (const char of text.split("")) {
+                    currentText += char;
+                    element.innerHTML = marked.parse(currentText);
+                    engine.scrollTo({top: engine.scrollHeight});
+                    await new Promise(r => setTimeout(r, 10));
+                }
+                element.classList.remove('typing');
+            };
+
+            const createBubble = (role, content, isWait = false) => {
+                const aiGroup = document.createElement('div');
+                aiGroup.className = "flex flex-col gap-1 items-start";
+                if(role === 'ai') {
+                    const status = document.createElement('div');
+                    status.className = "thinking-status";
+                    status.innerText = "zeta sedang memproses...";
+                    const bubble = document.createElement('div');
+                    bubble.className = "bubble ai-bubble";
+                    if(isWait) bubble.innerHTML = "•••";
+                    aiGroup.appendChild(status);
+                    aiGroup.appendChild(bubble);
+                    engine.appendChild(aiGroup);
+                    return { bubble, status };
+                } else {
+                    const b = document.createElement('div');
+                    b.className = "bubble user-bubble";
+                    b.innerHTML = marked.parse(content);
+                    engine.appendChild(b);
+                    return b;
+                }
+            };
+
+            return {
+                setMode: (mode, el) => {
+                    currentMode = mode;
+                    document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('active'));
+                    el.classList.add('active');
+                    setTimeout(toggleMenu, 300);
+                    createBubble('ai', `System set to **${mode.toUpperCase()}** mode.`);
+                },
+                handleFile: (input) => {
+                    const file = input.files[0];
+                    if(file) createBubble('user', `📎 Mengunggah file: **${file.name}**`);
+                },
+                send: async () => {
+                    const input = document.getElementById('zeta-in');
+                    const val = input.value.trim();
+                    if(!val) return;
+                    createBubble('user', val);
+                    input.value = ""; input.style.height = "auto";
+                    const wait = createBubble('ai', "", true);
+                    try {
+                        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                            method: "POST",
+                            headers: { "Authorization": `Bearer ${KEY}`, "Content-Type": "application/json" },
+                            body: JSON.stringify({ 
+                                model: currentMode === 'pro' ? "llama-3.3-70b-versatile" : "llama-3.1-8b-instant", 
+                                messages: [{role:"system", content:"Kamu Zeta."}, {role:"user", content:val}] 
+                            })
+                        });
+                        const data = await res.json();
+                        wait.status.style.display = 'none';
+                        wait.bubble.innerHTML = "";
+                        await typeText(wait.bubble, data.choices[0].message.content);
+                    } catch (e) {
+                        wait.status.innerText = "Error Connection";
+                    }
+                    engine.scrollTo({top: engine.scrollHeight, behavior: 'smooth'});
+                }
+            };
+        })();
+
+        document.getElementById('zeta-in').addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ZETA.send(); }
+        });
+    </script>
+</body>
+</html>
